@@ -182,12 +182,23 @@ window.N2App = {
     if (!onboardingShown) {
       const modal = document.getElementById('onboarding-modal');
       const syncBtn = document.getElementById('onboarding-sync-btn');
+      const icsBtn = document.getElementById('onboarding-ics-btn');
       const skipBtn = document.getElementById('onboarding-skip-btn');
       
       if (modal && syncBtn && skipBtn) {
         setTimeout(() => {
           modal.style.display = 'flex';
         }, 1500);
+        
+        if (icsBtn) {
+          icsBtn.onclick = () => {
+            if (window.N2Notifications) {
+              window.N2Notifications.downloadICS(this.plan);
+            }
+            modal.style.display = 'none';
+            localStorage.setItem('n2g_onboarding_shown', 'true');
+          };
+        }
         
         syncBtn.onclick = () => {
           if (window.N2Notifications) {
