@@ -1,0 +1,35 @@
+{
+  "name": "N2GOKAKU — 120 Ngày Chinh Phục N2",
+  "short_name": "N2GOKAKU",
+  "description": "Ứng dụng theo dõi tiến độ ôn thi JLPT N2. Đánh dấu tasks hàng ngày, nhận nhắc nhở, xem thống kê.",
+  "start_url": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#0a0a1a",
+  "background_color": "#0a0a1a",
+  "lang": "vi",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='80' fill='%230a0a1a'/><text x='256' y='380' font-size='320' text-anchor='middle'>🎯</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Hôm nay",
+      "short_name": "Tasks",
+      "url": "./#dashboard",
+      "description": "Xem tasks hôm nay"
+    },
+    {
+      "name": "Thống kê",
+      "short_name": "Stats",
+      "url": "./#stats",
+      "description": "Xem thống kê tiến độ"
+    }
+  ]
+}

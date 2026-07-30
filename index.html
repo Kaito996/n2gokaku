@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="description" content="N2GOKAKU — Ứng dụng theo dõi tiến độ ôn thi JLPT N2 trong 120 ngày. Đánh dấu tasks hàng ngày, nhận nhắc nhở, xem thống kê tiến độ.">
+    <meta name="theme-color" content="#0a0a1a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="N2GOKAKU">
+    
+    <title>N2GOKAKU — 120 Ngày Chinh Phục N2</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- APP HEADER - Sticky top bar                -->
+    <!-- ═══════════════════════════════════════════ -->
+    <header class="app-header" id="app-header">
+        <div class="header-top">
+            <div class="header-left">
+                <span class="app-logo">🎯</span>
+                <div class="header-title-group">
+                    <h1 class="app-title">N2GOKAKU</h1>
+                    <span class="day-counter" id="day-counter">NGÀY 1/128</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="streak-badge" id="streak-counter">
+                    <span class="streak-fire">🔥</span>
+                    <span class="streak-number">0</span>
+                </div>
+                <div class="countdown-badge" id="countdown">
+                    <span class="countdown-number">128</span>
+                    <span class="countdown-label">ngày</span>
+                </div>
+            </div>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="progress-bar-fill" style="width: 0%"></div>
+        </div>
+        <span class="progress-text" id="progress-text">0% hoàn thành</span>
+    </header>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SCOLDING / MOTIVATION BANNER               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="scolding-banner" id="scolding-banner" style="display: none;">
+        <div class="scolding-icon">😡</div>
+        <div class="scolding-content">
+            <div class="scolding-text" id="scolding-text"></div>
+            <button class="btn-freeze" id="btn-freeze" style="display: none;">
+                <span class="freeze-icon">❄️</span> Dùng Thẻ Miễn Tử (<span id="freeze-tokens-count">2</span>)
+            </button>
+        </div>
+        <button class="dismiss-btn" id="scolding-dismiss">&times;</button>
+    </div>
+
+    <div class="motivation-banner" id="motivation-banner" style="display: none;">
+        <div class="motivation-icon">🔥</div>
+        <div class="motivation-text" id="motivation-text"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- DASHBOARD VIEW - "Hôm nay"                 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <main class="view active" id="dashboard-view">
+        <!-- Yesterday Reminder Banner -->
+        <div class="yesterday-banner" id="yesterday-banner" style="display: none;">
+            <div class="yesterday-icon">⚠️</div>
+            <div class="yesterday-text">Hôm qua bạn chưa check hết task. Bấm vào đây để xem lại!</div>
+        </div>
+
+        <!-- Phase Banner -->
+        <div class="phase-banner" id="phase-banner">
+            <span class="phase-icon"></span>
+            <div class="phase-info">
+                <span class="phase-title"></span>
+                <span class="phase-subtitle"></span>
+            </div>
+        </div>
+
+        <!-- Morning Session -->
+        <div class="session-section" id="session-morning">
+            <div class="session-header">
+                <span class="session-emoji">🌅</span>
+                <div class="session-info">
+                    <span class="session-title">CA SÁNG</span>
+                    <span class="session-time">08:00 - 11:30</span>
+                </div>
+                <span class="session-progress" id="morning-progress"></span>
+            </div>
+            <div class="task-list" id="morning-tasks"></div>
+        </div>
+
+        <!-- Afternoon Session -->
+        <div class="session-section" id="session-afternoon">
+            <div class="session-header">
+                <span class="session-emoji">🌤️</span>
+                <div class="session-info">
+                    <span class="session-title">CA CHIỀU</span>
+                    <span class="session-time">14:00 - 17:00</span>
+                </div>
+                <span class="session-progress" id="afternoon-progress"></span>
+            </div>
+            <div class="task-list" id="afternoon-tasks"></div>
+        </div>
+
+        <!-- Evening Session -->
+        <div class="session-section" id="session-evening">
+            <div class="session-header">
+                <span class="session-emoji">🌙</span>
+                <div class="session-info">
+                    <span class="session-title">CA TỐI</span>
+                    <span class="session-time">20:00 - 21:30</span>
+                </div>
+                <span class="session-progress" id="evening-progress"></span>
+            </div>
+            <div class="task-list" id="evening-tasks"></div>
+        </div>
+
+        <!-- Rest Day Message (shown when no tasks) -->
+        <div class="rest-day-message" id="rest-day-message" style="display: none;">
+            <div class="rest-emoji">😴</div>
+            <h2 class="rest-title">Ngày Nghỉ Ngơi</h2>
+            <p class="rest-text">Não bộ cần thời gian để consolidate kiến thức. Hãy ngủ đủ giấc, đi dạo, và quay lại mạnh mẽ hơn vào ngày mai!</p>
+        </div>
+
+        <!-- Daily Tip -->
+        <div class="daily-tip" id="daily-tip">
+            <span class="tip-icon">💡</span>
+            <span class="tip-text" id="tip-text"></span>
+        </div>
+    </main>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- CALENDAR VIEW - "Lịch"                     -->
+    <!-- ═══════════════════════════════════════════ -->
+    <main class="view" id="calendar-view">
+        <div class="calendar-legend">
+            <span class="legend-item"><span class="legend-dot completed"></span>Hoàn thành</span>
+            <span class="legend-item"><span class="legend-dot partial"></span>Một phần</span>
+            <span class="legend-item"><span class="legend-dot missed"></span>Bỏ lỡ</span>
+            <span class="legend-item"><span class="legend-dot rest"></span>Nghỉ</span>
+            <span class="legend-item"><span class="legend-dot today-dot"></span>Hôm nay</span>
+        </div>
+        <div id="calendar-container"></div>
+        <button class="fab-today" id="fab-today">
+            <span class="fab-icon">🎯</span>
+            <span class="fab-text">Hôm nay</span>
+        </button>
+    </main>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- STATS VIEW - "Thống kê"                    -->
+    <!-- ═══════════════════════════════════════════ -->
+    <main class="view" id="stats-view">
+        <div id="weekly-summary-container"></div>
+        <div id="overall-stats-container"></div>
+    </main>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SETTINGS VIEW - "Cài đặt"                  -->
+    <!-- ═══════════════════════════════════════════ -->
+    <main class="view" id="settings-view">
+        <!-- Notification Settings -->
+        <div class="settings-section">
+            <h3 class="settings-title">🔔 Thông báo nhắc nhở</h3>
+            <div class="setting-row">
+                <div class="setting-info">
+                    <span class="setting-label">Bật thông báo</span>
+                    <span class="setting-desc">Nhận nhắc nhở khi đến giờ học</span>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="notification-toggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-row" id="notify-times-group">
+                <div class="time-setting">
+                    <label>🌅 Sáng</label>
+                    <input type="time" id="morning-notify-time" value="07:45" class="time-input">
+                </div>
+                <div class="time-setting">
+                    <label>🌤️ Chiều</label>
+                    <input type="time" id="afternoon-notify-time" value="13:45" class="time-input">
+                </div>
+                <div class="time-setting">
+                    <label>🌙 Tối</label>
+                    <input type="time" id="evening-notify-time" value="19:45" class="time-input">
+                </div>
+            </div>
+        </div>
+
+        <!-- Calendar Integration -->
+        <div class="settings-section">
+            <h3 class="settings-title">📅 Đồng bộ lịch</h3>
+            <p class="settings-desc">Thêm nhắc nhở vào Google Calendar hoặc tải file lịch.</p>
+            <div class="settings-buttons">
+                <button class="btn btn-primary" id="calendar-export-btn">
+                    <span>📅</span> Thêm vào Google Calendar
+                </button>
+                <button class="btn btn-secondary" id="ics-download-btn">
+                    <span>📥</span> Tải file .ICS
+                </button>
+            </div>
+        </div>
+
+        <!-- Data Management -->
+        <div class="settings-section">
+            <h3 class="settings-title">💾 Quản lý dữ liệu</h3>
+            <div class="settings-buttons">
+                <button class="btn btn-secondary" id="export-btn">
+                    <span>📤</span> Xuất dữ liệu (JSON)
+                </button>
+                <button class="btn btn-secondary" id="import-btn">
+                    <span>📥</span> Nhập dữ liệu
+                </button>
+                <input type="file" id="import-file" accept=".json" style="display: none;">
+            </div>
+        </div>
+
+        <!-- Install PWA -->
+        <div class="settings-section" id="pwa-section" style="display: none;">
+            <h3 class="settings-title">📱 Cài đặt ứng dụng</h3>
+            <p class="settings-desc">Cài N2GOKAKU lên màn hình chính để truy cập nhanh và nhận thông báo.</p>
+            <button class="btn btn-accent" id="settings-install-btn">
+                <span>📲</span> Cài đặt N2GOKAKU
+            </button>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="settings-section danger-section">
+            <h3 class="settings-title">⚠️ Vùng nguy hiểm</h3>
+            <button class="btn btn-danger" id="reset-btn">
+                <span>🗑️</span> Xóa toàn bộ dữ liệu
+            </button>
+        </div>
+
+        <!-- About -->
+        <div class="settings-section about-section">
+            <div class="about-text">
+                <p><strong>N2GOKAKU</strong> v1.0</p>
+                <p>120 Ngày Chinh Phục JLPT N2</p>
+                <p class="about-motto">「努力は裏切らない」— Nỗ lực không bao giờ phản bội</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- MODAL (Day Detail from Calendar)           -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="modal-overlay" id="modal-overlay" style="display: none;">
+        <div class="modal-content" id="modal-content">
+            <button class="modal-close" id="modal-close">&times;</button>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- ONBOARDING MODAL                           -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="modal-overlay" id="onboarding-modal" style="display: none;">
+        <div class="modal-content onboarding-content">
+            <div class="onboarding-icon">📅</div>
+            <h3>Đừng để mất nhịp!</h3>
+            <p>Trình duyệt đôi khi sẽ tự động tắt thông báo. Để chắc chắn bạn không bao giờ lỡ giờ học, hãy thêm lịch N2GOKAKU vào Google Calendar của bạn.</p>
+            <div class="onboarding-actions">
+                <button class="btn btn-primary" id="onboarding-sync-btn">
+                    <span>📅</span> Đồng bộ ngay
+                </button>
+                <button class="btn btn-ghost" id="onboarding-skip-btn">Để sau</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- PWA INSTALL PROMPT                         -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="install-prompt" id="install-prompt" style="display: none;">
+        <div class="install-content">
+            <span class="install-icon">📲</span>
+            <div class="install-text">
+                <strong>Cài N2GOKAKU</strong>
+                <span>Nhận thông báo nhắc nhở hàng ngày!</span>
+            </div>
+        </div>
+        <div class="install-actions">
+            <button class="btn btn-accent" id="install-btn">Cài đặt</button>
+            <button class="btn btn-ghost" id="install-dismiss">Để sau</button>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- CONFETTI CANVAS (celebration effect)        -->
+    <!-- ═══════════════════════════════════════════ -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- BOTTOM NAVIGATION BAR                      -->
+    <!-- ═══════════════════════════════════════════ -->
+    <nav class="nav-bar" id="nav-bar">
+        <button class="nav-btn active" data-tab="dashboard">
+            <span class="nav-icon">📋</span>
+            <span class="nav-label">Hôm nay</span>
+        </button>
+        <button class="nav-btn" data-tab="calendar">
+            <span class="nav-icon">📅</span>
+            <span class="nav-label">Lịch</span>
+        </button>
+        <button class="nav-btn" data-tab="stats">
+            <span class="nav-icon">📊</span>
+            <span class="nav-label">Thống kê</span>
+        </button>
+        <button class="nav-btn" data-tab="settings">
+            <span class="nav-icon">⚙️</span>
+            <span class="nav-label">Cài đặt</span>
+        </button>
+    </nav>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SCRIPTS (Order matters!)                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <script src="scripts/data.js"></script>
+    <script src="scripts/storage.js"></script>
+    <script src="scripts/utils.js"></script>
+    <script src="scripts/dashboard.js"></script>
+    <script src="scripts/calendar.js"></script>
+    <script src="scripts/weekly-summary.js"></script>
+    <script src="scripts/notifications.js"></script>
+    <script src="scripts/settings.js"></script>
+    <script src="scripts/app.js"></script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('✅ Service Worker registered:', reg.scope))
+                .catch(err => console.error('❌ SW registration failed:', err));
+        }
+        
+        // Initialize app when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.N2App) {
+                window.N2App.init();
+            }
+        });
+    </script>
+</body>
+</html>
