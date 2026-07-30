@@ -69,6 +69,7 @@ a { color: var(--accent-1); text-decoration: none; }
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   padding: 12px 16px;
+  padding-top: calc(12px + env(safe-area-inset-top, 0px));
   border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 
@@ -202,7 +203,7 @@ a { color: var(--accent-1); text-decoration: none; }
   bottom: 0;
   left: 50%; transform: translateX(-50%);
   width: 100%; max-width: 480px;
-  height: 68px;
+  height: calc(68px + env(safe-area-inset-bottom, 0px));
   background: rgba(17,17,40,0.92);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
@@ -211,7 +212,7 @@ a { color: var(--accent-1); text-decoration: none; }
   align-items: center;
   z-index: 1000;
   border-top: 1px solid rgba(255,255,255,0.06);
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .nav-btn {
