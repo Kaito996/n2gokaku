@@ -3,7 +3,7 @@
 // Xử lý: Caching (offline), Push Notifications
 // ═══════════════════════════════════════════════════════════════
 
-const CACHE_NAME = 'n2gokaku-v1';
+const CACHE_NAME = 'n2gokaku-v2';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -17,7 +17,8 @@ const ASSETS_TO_CACHE = [
     './scripts/notifications.js',
     './scripts/settings.js',
     './scripts/app.js',
-    './manifest.json'
+    './manifest.json',
+    './icon.png'
 ];
 
 // ─── INSTALL: Cache tất cả assets ───
